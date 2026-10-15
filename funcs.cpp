@@ -98,7 +98,7 @@ void setupCompBets(Table *table1, string action, string userAction){
 }
 
 
-void getHandRanks(Table *table1, int numCommunityCards, fstream &myFile, string userAction){
+void getHandRanks(Table *table1, int numCommunityCards, string userAction){
     // 0 denotes a ten
     // B is 66
     // G is 71
@@ -150,20 +150,20 @@ void getHandRanks(Table *table1, int numCommunityCards, fstream &myFile, string 
     string action = "";
 
     // Add the comp name and action to results to see if they folded in the previous round
-    vector<string> newLines = readIntoVector("testing_comp_output.txt");
+    // vector<string> newLines = readIntoVector("testing_comp_output.txt");
 
-    // Test to see if the player or comp folded in the last round
-    int fileLineIterator = 4;
-    for(int i = 0; i <= 3; i++){
-        // cout << "setResults function" << endl;
-        // cout << "newLines[4].substr = " << newLines[fileLineIterator].substr(18,3) << endl;
-        table1->setResults(i, 0, newLines[fileLineIterator].substr(11,5));
-        table1->setResults(i, 1, newLines[fileLineIterator].substr(18,3));
-        fileLineIterator+=2;
-        if(table1->getResults(i, 1) == "fold"){
-            cout << table1->getResults(i, 0) << " will not be active this round." << endl;
-        }
-    }
+    // // Test to see if the player or comp folded in the last round
+    // int fileLineIterator = 4;
+    // for(int i = 0; i <= 3; i++){
+    //     // cout << "setResults function" << endl;
+    //     // cout << "newLines[4].substr = " << newLines[fileLineIterator].substr(18,3) << endl;
+    //     table1->setResults(i, 0, newLines[fileLineIterator].substr(11,5));
+    //     table1->setResults(i, 1, newLines[fileLineIterator].substr(18,3));
+    //     fileLineIterator+=2;
+    //     if(table1->getResults(i, 1) == "fold"){
+    //         cout << table1->getResults(i, 0) << " will not be active this round." << endl;
+    //     }
+    // }
 
     /*
      * B is 66
@@ -300,7 +300,7 @@ void getHandRanks(Table *table1, int numCommunityCards, fstream &myFile, string 
     setupCompBets(table1, action, userAction);
 }
 
-void setBigThree(Table *table1, int dealerRotator, int smallBlindRotator, int bigBlindRotator, fstream &myFile) {
+void setBigThree(Table *table1, int dealerRotator, int smallBlindRotator, int bigBlindRotator) {
     // If the rotators go out of scope, reset them to zero to allow for continual gameplay
     if (dealerRotator > 4) {
         dealerRotator = 0;
@@ -311,14 +311,14 @@ void setBigThree(Table *table1, int dealerRotator, int smallBlindRotator, int bi
     }
 
     // Set the dealer, smallBlind, bigBlind
-    table1->setDealer(table1->getPlayer(dealerRotator), myFile);
-    table1->setSmallBlind(table1->getPlayer(smallBlindRotator), myFile);
-    table1->setBigBlind(table1->getPlayer(bigBlindRotator), myFile);
+    table1->setDealer(table1->getPlayer(dealerRotator));
+    table1->setSmallBlind(table1->getPlayer(smallBlindRotator));
+    table1->setBigBlind(table1->getPlayer(bigBlindRotator));
 
     // Get the dealer, smallBlind, and bigBlind
-    table1->getDealer();     // players[0]
-    table1->getSmallBlind(); // players[1]
-    table1->getBigBlind();   // players[2]
+    // table1->getDealer();     // players[0]
+    // table1->getSmallBlind(); // players[1]
+    // table1->getBigBlind();   // players[2]
 
     // Increment the dealerRotator for the next round
     dealerRotator++;

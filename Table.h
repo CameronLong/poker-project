@@ -18,7 +18,7 @@ class Table {
         string results[5][5];
         int checkCounter;
     public:
-        Table(Player** newPlayers, fstream &myFile) {
+        Table(Player** newPlayers) {
             for(int i = 0; i <= 4; i++){
                 activePlayers[i] = newPlayers[i];
             }
@@ -41,7 +41,8 @@ class Table {
         Player* getPlayer(int index);
         void getCommunityCards(int index);
         Card* getCommunityCard(int index);
-        void getAllCommunityCards(int numCards, vector<string> &lines);
+        int getCommunityCardLength();
+        void getAllCommunityCards(int numCards);
         int getValue(int index);
         string getSuit(int index);
         string getResults(int index, int value);
@@ -50,9 +51,9 @@ class Table {
         // Setters
         void setTable(int potValue);
         void setPot(int value);
-        void setDealer(Player* dealer, fstream &myFile);
-        void setSmallBlind(Player* smallBlind, fstream &myFile);
-        void setBigBlind(Player* bigBlind, fstream &myFile);
+        void setDealer(Player* dealer);
+        void setSmallBlind(Player* smallBlind);
+        void setBigBlind(Player* bigBlind);
         void setPlayers(Player* players[5]);
         void setCurrentBet();
         void setCommunityCard(Table *thisTable, int cardIndex, int cardVal, string cardSuit);

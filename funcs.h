@@ -7,7 +7,7 @@
 
 using namespace std;
 void getHandRanks(Table *table1, int numCommunityCards, fstream &myFile, string userAction);
-void setBigThree(Table *table1, int dealerRotator, int smallBlindRotator, int bigBlindRotator, fstream &myFile);
+void setBigThree(Table *table1, int dealerRotator, int smallBlindRotator, int bigBlindRotator);
 // void dealHandsFunc(Table *table1, Card **deck, string username);
 void refillDeck(Card** deck, Card** refill);
 vector<string> readIntoVector(string filename);

@@ -11,6 +11,7 @@
 #include <vector>
 #include <limits>
 #include <algorithm>
+#include <list>
 
 #include "Player.h"
 #include "Card.h"
@@ -25,9 +26,7 @@ int main() {
     bool potHandled = false;
     bool restart = false;
     bool incrementCommunity = false;
-
     int communityCardsCounter = 0;
-
 
     // Clear previous file contents
     ofstream file;
@@ -36,7 +35,7 @@ int main() {
 
     Table *table1 = (Table*) malloc( sizeof(Table));
     string username;
-    cout << "Welcome to Texas Holdem! Buy in in $100" << endl;
+    cout << "Welcome to Texas Holdem! Buy in is $100" << endl;
     cout << "Please enter your name: ";
     cin >> username;
 
@@ -56,7 +55,7 @@ int main() {
 
     // Initialize Players
     Player **players = new Player*[5];  // Create array to hold 5 player objects
-    Player *playerptr = (Player*)malloc(sizeof(Player));
+    // Player *playerptr = (Player*)malloc(sizeof(Player));
     // Loop through the array, create players and store them in the array
     for(int i = 0; i <= 3; i++){
         string tempName = "Comp" + to_string(i+1);
@@ -70,12 +69,11 @@ int main() {
     // Initialize the table(players, file)
     // Open the file with decisions and bets for reading
     
-    fstream tableFile("testing_comp_output.txt");
+    // fstream tableFile("testing_comp_output.txt");
     
-    Table table(players, tableFile);
+    Table table(players);
     *table1 = table;
     cout << endl;
-    tableFile.close();
 
     // Initialize deck
     Card **deck = new Card*[52];
@@ -109,7 +107,7 @@ int main() {
             refillDeck(deck, refill);
             
             // Setup the dealer, smallBlind, and biglind
-            setBigThree(table1, dealerRotator, smallBlindRotator, bigBlindRotator, myfile);
+            setBigThree(table1, dealerRotator, smallBlindRotator, bigBlindRotator);
 
 
             // If we are restarting a game, reset the communityCardsCounter to 0
@@ -129,27 +127,18 @@ int main() {
             if(table1->getPlayer(4)->getFolded()){
                 for(int i = 0; i < 4; i++){
                     table1->getPlayer(i)->setHand(deck);
-                    table1->getPlayer(i)->writeHand(i, myfile);
                 }
                 table1->getPlayer(4)->setFolded(false);
                 table1->getPlayer(4)->setHand(deck);
-                table1->getPlayer(4)->writePlayerHand(username, myfile);
-                // Output the community cards to the testing_community file
-                myfile << "Community cards: ";
-                myfile << endl << "Pot: $" << table1->getPot() << endl;
-                myfile.close();
             }
 
 
-            // Read lines from the file into the vector
-            vector<string> lines = readIntoVector("testing_comp_output.txt");
-
             cout << endl;
             // Check to see if the community cards array is empty
-            if (communityCardsCounter == 0) {
+            if (table1->getCommunityCardLength() == 0) {
                 cout << "Community Cards: None" << endl;
             } else {
-                table1->getAllCommunityCards(communityCardsCounter, lines);
+                table1->getAllCommunityCards(communityCardsCounter);
                 cout << endl;
             }
 
@@ -216,22 +205,10 @@ int main() {
             }
             // Run function to get computer actions
             fstream myFile("testing_comp_output.txt");
+            cout << "Crashing before getHandRanks function" << endl;
             getHandRanks(table1, communityCardsCounter, myFile, userAction);
+            cout << "Crashing after getHandRanks function" << endl;
             myFile.close();
-
-            // Setup a string vector to store the lines in the file
-            lines = readIntoVector("testing_comp_output.txt");
-
-            string actionLine = "Action for " + username;
-            // Go through the vector
-            for (string &text : lines) {
-                // Increment a variable to represent the index
-                temp++;
-                // If a string in the vector contains the action for the player, set the index to the temp index
-                if (text.find(actionLine) != string::npos) {
-                    actionLineNumber = temp;
-                }
-            }
 
             // Get the string at the permanent index and modify it with the username, action, and bet amount
 
@@ -257,8 +234,6 @@ int main() {
             }
             cout << endl;
 
-            // Writing player actions to file
-            lines[actionLineNumber - 1] = "Action for " + username + ": " + userAction + ", bet: $" + to_string(userBet);
             table1->getPlayer(4)->setPrevAction(userAction);
             if(updatedUserAction == "fold"){
                 table1->getPlayer(4)->setFolded(true);
@@ -270,18 +245,13 @@ int main() {
 
             // Get bets from the computers stored in the text file
             for(int i = 0; i <= 4; i++){
-                regex rgx("\\$(.*)");
-                smatch match;
-
-                // regex grabs the bet amount and compares the bet to the highest bet
-                if (regex_search(lines[compLineIterator], match, rgx)) {
-                    bet = stoi(match[1]);
-                    // This gets the highest bet and evens the pot
-                    if (bet > high) {
-                        high = bet;
-                    }
-                    pot += high;
+                // This gets the highest bet and evens the pot
+                bet = table1->getPlayer(i)->getCurrentBet();
+                if (bet > high) {
+                    high = bet;
                 }
+                pot += high;
+            
                 // Makes the computers match the highest bet if they decided to bet this round
                 if(!table1->getPlayer(i)->getFolded()){
                     table1->getPlayer(i)->setPrevBet(high);
@@ -292,11 +262,6 @@ int main() {
             table1->setPot(pot);
 
             // Writes actions for the computers to the text file
-            compLineIterator = 4;
-            for(int i = 0; i <= 3; i++){
-                lines[compLineIterator] = "Action for Comp" + to_string(i+1) + ": bet, bet: $" + to_string(high);
-                compLineIterator += 2;
-            }
             // Asks the user to match the highest bet if the player decided to bet
             string updatedBetAction;
             if(userBet < high && !table1->getPlayer(4)->getFolded()){
@@ -311,22 +276,6 @@ int main() {
                 }
             }
             if(!restart){
-                lines[14] = "Pot: $" + to_string(table1->getPot());
-                lines[12] = "Action for " + username + ": " + userAction + ", bet: $" + to_string(userBet);
-
-                // Write the modified lines back to the file
-                fstream outputFile("testing_comp_output.txt");
-                // If the file does not exist spit out an error
-                if (outputFile) {
-                    // cerr << "Could not open the file for writing: " << inFile << std::endl;
-                    // Write the array to the file
-                    for (const string l : lines) {
-                        outputFile << l << endl;
-                        // cout << l << endl;
-                    }
-                }
-                // Close the file
-                outputFile.close();
 
                 // Increment the number of community cards displayed per round
                 // If there is already 5 cards on the table, we want to start a new "game"

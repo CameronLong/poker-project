@@ -87,6 +87,10 @@ int Player::getPrevBet(){
     return previousBet;
 }
 
+int Player::getCurrentBet(){
+    return currentBet;
+}
+
 void Player::setRoundBet(int roundBet){
     totalRoundBet += roundBet;
 }

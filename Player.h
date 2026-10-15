@@ -13,6 +13,7 @@ class Player {
         Card* hand[2];
         string previousAction;
         int previousBet;
+        int currentBet;
         int totalRoundBet;
         bool folded;
     public:
@@ -32,6 +33,7 @@ class Player {
         Card* returnHand(int index);
         bool getFolded();
         int getPrevBet();
+        int getCurrentBet();
 
         void writePlayerHand(string username, fstream &myFile);
         int getBalance();

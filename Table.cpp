@@ -9,25 +9,23 @@ void Table::getCommunityCards(int index) {
     }
 }
 
-void Table::getAllCommunityCards(int numCards, vector<string> &lines) {
+int Table::getCommunityCardLength(){
+    int length = 0;
+    for(int i = 0; i <= 4; i++){
+        if(communityCards[i]->getValue() != 0){
+            length++;
+        }
+    }
+}
+
+void Table::getAllCommunityCards(int numCards) {
     string tempVectorLine = "";
 
-    lines[13] = "Community cards: ";
     cout << "Community cards: ";
     for (int i = 0; i < numCards; i++) {
         cout << communityCards[i]->getValue() << communityCards[i]->getSuit();
-        lines[13] += to_string(communityCards[i]->getValue()) + communityCards[i]->getSuit() + " | ";
         cout << " | ";
     }
-
-    // cout << endl << lines[14] << endl;
-    fstream outputFile("testing_comp_output.txt");
-    int temp = 0;
-    for(const string vectorLine : lines){
-        outputFile << vectorLine << endl;
-        temp++;
-    }
-    outputFile.close();
 }
 
 Card* Table::getCommunityCard(int index){
@@ -116,18 +114,15 @@ void Table::setTable(int potValue) {
 void Table::setPot(int value) {
     this->potValue = value;
 }
-void Table::setDealer(Player* dealer, fstream &myFile) { 
+void Table::setDealer(Player* dealer) { 
     this->dealer = dealer;
-    myFile << "Dealer: " << dealer->getPlayerName() << "\n";
 }
-void Table::setSmallBlind(Player* smallBlind, fstream &myFile) {
+void Table::setSmallBlind(Player* smallBlind) {
     this->smallBlind = smallBlind;
-    myFile << "Small blind: " << smallBlind->getPlayerName() << "\n";
 }
-void Table::setBigBlind(Player* bigBlind, fstream &myFile) {
+void Table::setBigBlind(Player* bigBlind) {
     this->bigBlind = bigBlind;
-    myFile << "Big blind: " << bigBlind->getPlayerName() << "\n";
-    }
+}
 void Table::setPlayers(Player* players[5]) {
     memcpy(activePlayers, players, 5 * sizeof(Player));
 }
