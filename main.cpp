@@ -28,6 +28,7 @@ int main() {
 
     int communityCardsCounter = 0;
 
+
     // Clear previous file contents
     ofstream file;
     file.open("testing_comp_output.txt", ofstream::out | ofstream::trunc);
@@ -40,7 +41,8 @@ int main() {
     cin >> username;
 
     // Exceptions
-    regex validUsernameRegex("^[A-Za-z]+$");
+    regex validUsernameRegex("^[A-Za-z]+$");    // Checks username to make sure it is just alphabet characters and at least one character
+    // Ask for username until legal username is provided
     while (!regex_match(username, validUsernameRegex)) {
         try {
             cin.clear();
@@ -53,8 +55,9 @@ int main() {
     }
 
     // Initialize Players
-    Player **players = new Player*[5];
+    Player **players = new Player*[5];  // Create array to hold 5 player objects
     Player *playerptr = (Player*)malloc(sizeof(Player));
+    // Loop through the array, create players and store them in the array
     for(int i = 0; i <= 3; i++){
         string tempName = "Comp" + to_string(i+1);
         players[i] = new Player(tempName, 100);
@@ -66,7 +69,9 @@ int main() {
     cout << players[4]->getPlayerName() << " has joined the game." << endl;
     // Initialize the table(players, file)
     // Open the file with decisions and bets for reading
+    
     fstream tableFile("testing_comp_output.txt");
+    
     Table table(players, tableFile);
     *table1 = table;
     cout << endl;
@@ -163,15 +168,16 @@ int main() {
             int actionLineNumber = 0, temp = 0, pot = 0, userBet = 0, previousBet = 0, tempIndex = 0;
             string userAction = "", betDecision = "";
 
-            // Start the gameplay
+            // Start the gameplay by displaying money and hand information to the player
             cout << "You currently have $" << table1->getPlayer(4)->getBalance() << endl;
             cout << "Your hand: ";
             table1->getPlayer(4)->getHand();
+            // Start main loop where player takes actions
             if(!table1->getPlayer(4)->getFolded()){
                 cout << "You can either bet, call or fold (bet, check, fold): ";
                 cin >> betDecision;
                 
-                // Error handling
+                // Error handling for bad actions
                 while (betDecision != "bet" && betDecision != "check" && betDecision != "fold") {
                     cout << "Invalid selection. Please try again (bet, check, fold): ";
                     cin >> betDecision;
@@ -181,6 +187,7 @@ int main() {
                 if (betDecision == "bet") {
                     cout << "How much would you like to bet? ";
                     cin >> userBet;
+                    // Set the player's bet for the round
                     table1->getPlayer(4)->setRoundBet(userBet);
 
                     // Error handling with bet amount
@@ -230,7 +237,9 @@ int main() {
 
             string updatedUserAction = "";
             int updatedBet = 0;
+            // Check to see if all users made check action
             if(table1->getCheckCounter() != 4 && userAction == "check"){
+                // If the player decided to check, but all computers did not, ask for another action
                 while(updatedUserAction != "bet" && updatedUserAction != "fold"){
                     cout << "All players did not check. You may either fold or bet: ";
                     cin >> updatedUserAction;
@@ -248,6 +257,7 @@ int main() {
             }
             cout << endl;
 
+            // Writing player actions to file
             lines[actionLineNumber - 1] = "Action for " + username + ": " + userAction + ", bet: $" + to_string(userBet);
             table1->getPlayer(4)->setPrevAction(userAction);
             if(updatedUserAction == "fold"){
@@ -258,6 +268,7 @@ int main() {
             // Go through the vector
             
 
+            // Get bets from the computers stored in the text file
             for(int i = 0; i <= 4; i++){
                 regex rgx("\\$(.*)");
                 smatch match;
@@ -271,18 +282,22 @@ int main() {
                     }
                     pot += high;
                 }
+                // Makes the computers match the highest bet if they decided to bet this round
                 if(!table1->getPlayer(i)->getFolded()){
                     table1->getPlayer(i)->setPrevBet(high);
                 }
+                // Skips over the hands designated for computer hands
                 compLineIterator += 2;
             }
             table1->setPot(pot);
 
+            // Writes actions for the computers to the text file
             compLineIterator = 4;
             for(int i = 0; i <= 3; i++){
                 lines[compLineIterator] = "Action for Comp" + to_string(i+1) + ": bet, bet: $" + to_string(high);
                 compLineIterator += 2;
             }
+            // Asks the user to match the highest bet if the player decided to bet
             string updatedBetAction;
             if(userBet < high && !table1->getPlayer(4)->getFolded()){
                 cout << "You must match the highest bet to stay in the round. Your bet was: $" << userBet << " and needs to be: $" << high << endl;
@@ -316,6 +331,8 @@ int main() {
                 // Increment the number of community cards displayed per round
                 // If there is already 5 cards on the table, we want to start a new "game"
                 string potWinnerName = "", potWinnerHandRank = "14", potWinnerHandColor = "";
+                // Check to see if there are 5 cards, if there are figure out who won the pot
+                // !NEEDS TO BE CHANGED. PLAYERS CAN TAKE ONE ADDITIONAL ACTION AFTER THE FIFTH CARD IS LAID DOWN!
                 if (communityCardsCounter == 5) {
                     // Handle to see who wins the pot
                     for (int i = 0; i <= 3; i++) {
@@ -325,7 +342,7 @@ int main() {
                         } catch (...){
                             cout << "Something happened" << endl;
                         }
-                        if (stoi(table1->getResults(i, 3)) < stoi(potWinnerHandRank)) {
+                        if (stoi(table1->getResults(i, 3)) < stoi(potWinnerHandRank)) {     
                             potWinnerName = table1->getResults(i, 0);
                             potWinnerHandRank = table1->getResults(i, 3);
                             potWinnerHandColor = table1->getResults(i, 4);
@@ -341,6 +358,7 @@ int main() {
                     potHandled = table1->handlePot(potWinnerName);
                 }
 
+                // Check to see if the user still has money, if they do they can play another round without restarting
                 if (userBank > 0 && potHandled) {
                     cout << "Continue to play? (yes, no): ";
                     cin >> continuePlay;
@@ -351,12 +369,14 @@ int main() {
                         cout << "Thanks for playing!" << endl;
                     }
                 }
+
+                // Check to see if there are cards on the table, if there are no cards on the table and the player has not folded, the game has ended and needs to be reset
                 if(communityCardsCounter == 0 && !table1->getPlayer(4)->getFolded()){
                     communityCardsCounter = 3;
                     incrementCommunity = true;
-                } else if(incrementCommunity) {
+                } else if(incrementCommunity) {     // If cards are on the table and the player has not folded, add more cards to the table
                     communityCardsCounter++;
-                } else if(table1->getPlayer(4)->getFolded()){
+                } else if(table1->getPlayer(4)->getFolded()){       // If the player folds we want to set the card counter to 0 so that it gets caught on the next loop
                     communityCardsCounter = 0;
                     table1->getPlayer(4)->setFolded(true);
                 }
@@ -364,7 +384,6 @@ int main() {
                 // This sets the previous bet so that we can use it for stuff later
                 table1->getPlayer(4)->setPrevBet(userBet);
             }
-            // cout << "Folded at end of program: " << table1->getPlayer(4)->getFolded() << endl;
         }
         dealerRotator++;
         smallBlindRotator++;

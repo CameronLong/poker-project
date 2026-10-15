@@ -156,9 +156,9 @@ void getHandRanks(Table *table1, int numCommunityCards, fstream &myFile, string 
     int fileLineIterator = 4;
     for(int i = 0; i <= 3; i++){
         // cout << "setResults function" << endl;
-        // cout << newLines[4].substr(11,5) << endl;
-        table1->setResults(i, 0, newLines[4].substr(11,5));
-        table1->setResults(i, 1, newLines[4].substr(18,3));
+        // cout << "newLines[4].substr = " << newLines[fileLineIterator].substr(18,3) << endl;
+        table1->setResults(i, 0, newLines[fileLineIterator].substr(11,5));
+        table1->setResults(i, 1, newLines[fileLineIterator].substr(18,3));
         fileLineIterator+=2;
         if(table1->getResults(i, 1) == "fold"){
             cout << table1->getResults(i, 0) << " will not be active this round." << endl;

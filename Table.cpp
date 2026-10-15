@@ -80,7 +80,7 @@ string Table::getResults(int i, int j){
 }
 
 bool Table::handlePot(string potWinnerName){
-    cout << "Pot value is: $" << potValue << " and has been awareded to: " << potWinnerName << endl;
+    cout << "Pot value is: $" << potValue << " and has been awarded to: " << potWinnerName << endl;
     for(int i = 0; i <= 3; i++){
         int newBalance = 0;
         if(results[i][0] != potWinnerName){
