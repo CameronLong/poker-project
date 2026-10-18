@@ -128,8 +128,8 @@ void Table::setPlayers(Player* players[5]) {
 }
 void Table::setCurrentBet() {}
 
-void Table::setCommunityCard(Table *thisTable, int cardIndex, int cardVal, string cardSuit){
-    thisTable->communityCards[cardIndex]->setCardInfo(cardVal, cardSuit);
+void Table::setCommunityCard(Table& thisTable, int cardIndex, int cardVal, string cardSuit){
+    thisTable.communityCards[cardIndex]->setCardInfo(cardVal, cardSuit);
 }
 
 void Table::setResults(int i, int j, string value){

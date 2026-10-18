@@ -28,12 +28,6 @@ int main() {
     bool incrementCommunity = false;
     int communityCardsCounter = 0;
 
-    // Clear previous file contents
-    ofstream file;
-    file.open("testing_comp_output.txt", ofstream::out | ofstream::trunc);
-    file.close();
-
-    Table *table1 = (Table*) malloc( sizeof(Table));
     string username;
     cout << "Welcome to Texas Holdem! Buy in is $100" << endl;
     cout << "Please enter your name: ";
@@ -69,11 +63,7 @@ int main() {
     // Initialize the table(players, file)
     // Open the file with decisions and bets for reading
     
-    // fstream tableFile("testing_comp_output.txt");
-    
-    Table table(players);
-    *table1 = table;
-    cout << endl;
+    Table* table1 = new Table(players);
 
     // Initialize deck
     Card **deck = new Card*[52];
@@ -101,13 +91,12 @@ int main() {
         bool dealHands = true;
         // Continue to play the game while the player has money
         while (userBank > 0 && continuePlay == "yes") {
-            fstream myfile("testing_comp_output.txt");
             // shuffle the refill and Refill the deck for the next round
             // random_shuffle(begin(refill), end(refill));
             refillDeck(deck, refill);
             
             // Setup the dealer, smallBlind, and biglind
-            setBigThree(table1, dealerRotator, smallBlindRotator, bigBlindRotator);
+            setBigThree(*table1, dealerRotator, smallBlindRotator, bigBlindRotator);
 
 
             // If we are restarting a game, reset the communityCardsCounter to 0
@@ -204,11 +193,7 @@ int main() {
                 }
             }
             // Run function to get computer actions
-            fstream myFile("testing_comp_output.txt");
-            cout << "Crashing before getHandRanks function" << endl;
-            getHandRanks(table1, communityCardsCounter, myFile, userAction);
-            cout << "Crashing after getHandRanks function" << endl;
-            myFile.close();
+            getHandRanks(*table1, communityCardsCounter, userAction);
 
             // Get the string at the permanent index and modify it with the username, action, and bet amount
 
@@ -286,12 +271,18 @@ int main() {
                     // Handle to see who wins the pot
                     for (int i = 0; i <= 3; i++) {
                         try{
-                            cout << table1->getResults(i, 0) << " = " << table1->getResults(i, 1) << " | Hand Ranking: " << table1->getResults(i, 3) << " | Hand color category: " << table1->getResults(i, 4) << endl;
+                            cout << "Name: " << table1->getResults(i, 0) << endl;
+                            cout << "Action: " << table1->getResults(i, 1) << endl;
+                            cout << "Hand Ranking: " << table1->getResults(i, 3) << endl;
+                            cout << "Hand color category: " << table1->getResults(i, 4) << endl;
                             throw "bad";
-                        } catch (...){
+                        } catch (errc){
                             cout << "Something happened" << endl;
                         }
-                        if (stoi(table1->getResults(i, 3)) < stoi(potWinnerHandRank)) {     
+
+                        cout << "Before first stoi loop" << endl;
+                        if (stoi(table1->getResults(i, 3)) < stoi(potWinnerHandRank)) {
+                            cout << "Inside first stoi loop" << endl;
                             potWinnerName = table1->getResults(i, 0);
                             potWinnerHandRank = table1->getResults(i, 3);
                             potWinnerHandColor = table1->getResults(i, 4);

@@ -12,10 +12,12 @@ class Player {
         int balance;
         Card* hand[2];
         string previousAction;
+        string current_action;
         int previousBet;
         int currentBet;
         int totalRoundBet;
         bool folded;
+        int handRank;
     public:
         Player() {}
         Player(string newFirst, int newBalance = 100, int newPreviousBet = 0) : firstName(newFirst), balance(newBalance), previousBet(newPreviousBet) {
@@ -45,6 +47,7 @@ class Player {
 
         void setRoundBet(int roundBet);
         void setPrevAction(string prevAction);
+        void set_current_action(string current_action);
         void setFolded(bool newFolded);
         void setPrevBet(int oldBet);
 };

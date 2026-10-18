@@ -56,7 +56,7 @@ class Table {
         void setBigBlind(Player* bigBlind);
         void setPlayers(Player* players[5]);
         void setCurrentBet();
-        void setCommunityCard(Table *thisTable, int cardIndex, int cardVal, string cardSuit);
+        void setCommunityCard(Table& thisTable, int cardIndex, int cardVal, string cardSuit);
         void setResults(int i, int j, string value);
         void incrementCheckCounter();
 

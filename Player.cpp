@@ -99,6 +99,10 @@ void Player::setPrevAction(string prevAction){
     previousAction = prevAction;
 }
 
+void Player::set_current_action(string current_action){
+    this->current_action = current_action;
+}
+
 void Player::setFolded(bool newFolded){
     folded = newFolded;
 }
